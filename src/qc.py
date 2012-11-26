@@ -3,8 +3,10 @@
 Copyright (c) 2012 Nat Pryce.
 """
 
+import sys
 import random
 import itertools
+
 
 
 def _random_values(_generator_fn, *args, **kwargs):
@@ -27,9 +29,14 @@ def bits(lengths):
     return (random.getrandbits(length) for length in lengths)
 
 
-def ints(min,max):
+default_min_int = -1000
+default_max_int = +1000
+
+def ints(min=None, max=None):
     """random integers between min and max, inclusive"""
-    return _random_values(random.randint, min, max)
+    return _random_values(random.randint, 
+                          min if min is not None else default_min_int, 
+                          max if max is not None else default_max_int)
 
 
 def from_range(start, stop=None, step=1):
@@ -37,17 +44,27 @@ def from_range(start, stop=None, step=1):
     return _random_values(random.randrange, start, stop, step)
 
 
-def floats(a, b):
+default_min_float = sys.float_info.min
+default_max_float = sys.float_info.max
+
+def floats(a=None, b=None):
     """random floating-point numbers selected uniformly from [a,b) or [a,b] depending on rounding."""
-    return _random_values(random.uniform, a, b)
+    return _random_values(random.uniform,
+                          a if a is not None else default_min_float,
+                          b if b is not None else default_max_float)
 
+default_sequence_lengths = ints(min=0, max=32)
+default_sequence_elements = ints()
 
-def sequences(lengths, elements):
+def sequences(lengths=None, elements=None):
     """random length sequences of random elements"""
+    elements = elements if elements is not None else default_sequence_elements()
+    lengths = lengths if lengths is not None else default_sequence_lengths()
+    
     return (itertools.islice(elements, length) for length in lengths)
 
 
-def lists(lengths, elements):
+def lists(lengths=None, elements=None):
     """random length lists of random elements"""
     return map(list, sequences(lengths, elements))
 
