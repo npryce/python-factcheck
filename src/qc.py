@@ -94,6 +94,11 @@ def dicts(d):
     return (dict(zip(keys,values)) for values in zip(*value_iters))
 
 
+def mapping(f, *args_gens, **kwargs_gens):
+    return (f(*args,**kwargs) for (args, kwargs) in zip(tuples(*args_gens), dicts(kwargs_gens)))
+    
+
+
 def unique(elements, key=(lambda x:x)):
     """Yield unique elements, preserving order.
     
