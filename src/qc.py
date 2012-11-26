@@ -7,8 +7,6 @@ import sys
 import random
 import itertools
 
-
-
 def _random_values(_generator_fn, *args, **kwargs):
     while True:
         yield _generator_fn(*args, **kwargs)
@@ -30,7 +28,10 @@ def bits(lengths):
 
 
 default_min_int = -1000
+"""Default min value for ints"""
+
 default_max_int = +1000
+"""Default max value for ints"""
 
 def ints(min=None, max=None):
     """random integers between min and max, inclusive"""
@@ -45,7 +46,10 @@ def from_range(start, stop=None, step=1):
 
 
 default_min_float = sys.float_info.min
+"""Default min value for floats"""
+
 default_max_float = sys.float_info.max
+"""Default max value for floats"""
 
 def floats(a=None, b=None):
     """random floating-point numbers selected uniformly from [a,b) or [a,b] depending on rounding."""
@@ -54,7 +58,10 @@ def floats(a=None, b=None):
                           b if b is not None else default_max_float)
 
 default_sequence_lengths = ints(min=0, max=32)
+"""Default lengths for sequences and lists"""
+
 default_sequence_elements = ints()
+"""Default elements for sequences and lists"""
 
 def sequences(lengths=None, elements=None):
     """random length sequences of random elements"""
