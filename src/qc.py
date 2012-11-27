@@ -65,8 +65,8 @@ default_sequence_elements = ints()
 
 def sequences(lengths=None, elements=None):
     """random length sequences of random elements"""
-    elements = elements if elements is not None else default_sequence_elements()
-    lengths = lengths if lengths is not None else default_sequence_lengths()
+    elements = elements if elements is not None else default_sequence_elements
+    lengths = lengths if lengths is not None else default_sequence_lengths
     
     return (itertools.islice(elements, length) for length in lengths)
 
