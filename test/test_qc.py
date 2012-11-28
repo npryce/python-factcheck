@@ -8,6 +8,7 @@ from qc import *
 def test_always_always_returns_same_value(x:always("foo")):
     assert x == "foo"
 
+
 @forall
 def test_choice_selects_random_elements_from_a_sequence(v:choices([3, 6, 2, 1, 11])):
     assert v in [3, 6, 2, 1, 11]
@@ -29,6 +30,11 @@ def test_from_range_generates_ints_between_start_inclusive_stop_exclusive_by_ste
 def test_lists_generates_random_length_lists_with_random_elements(l:lists(lengths=ints(min=2,max=4), elements=ints(min=10,max=20))):
     assert 2 <= len(l) <= 4
     assert all(10 <= e <= 20 for e in l)
+
+@forall
+def test_lists_with_no_parameters_generates_lists_of_default_lengths_with_integer_elements(l:lists()):
+    assert 0 <= len(l) <= 32
+    assert all(type(i) == int for i in l)
 
 @forall
 def test_tuples_generates_random_fixed_size_tuples(t:tuples(ints(2,4), ints(3,9))):
@@ -58,7 +64,6 @@ def _f(a, b, c, d):
 @forall
 def test_mapping_generates_result_of_mapping_callable_over_argument_generators(n: mapping(_f, always(1), b=always(2), d=always(3), c=always(4))):
     assert n == 2
-    
 
 def test_unique_returns_unique_elements_in_order():
     assert list(unique([1,2,3,2,1])) == [1,2,3]

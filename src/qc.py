@@ -96,7 +96,6 @@ def dicts(d):
 
 def mapping(f, *args_gens, **kwargs_gens):
     return (f(*args,**kwargs) for (args, kwargs) in zip(tuples(*args_gens), dicts(kwargs_gens)))
-    
 
 
 def unique(elements, key=(lambda x:x)):
