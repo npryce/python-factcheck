@@ -5,7 +5,9 @@ Copyright (c) 2012 Nat Pryce.
 
 import sys
 import random
-import itertools
+from itertools import product, cycle, repeat, islice
+from functools import wraps
+
 
 def _random_values(_generator_fn, *args, **kwargs):
     while True:
@@ -14,7 +16,7 @@ def _random_values(_generator_fn, *args, **kwargs):
 
 def always(v):
     """always returns 'v'"""
-    return itertools.repeat(v)
+    return repeat(v)
 
 
 def choices(seq):
@@ -68,7 +70,7 @@ def sequences(lengths=None, elements=None):
     elements = elements if elements is not None else default_sequence_elements
     lengths = lengths if lengths is not None else default_sequence_lengths
     
-    return (itertools.islice(elements, length) for length in lengths)
+    return (islice(elements, length) for length in lengths)
 
 
 def lists(lengths=None, elements=None):
@@ -99,10 +101,7 @@ def mapping(f, *args_gens, **kwargs_gens):
 
 
 def unique(elements, key=(lambda x:x)):
-    """Yield unique elements, preserving order.
-    
-    Warning: will be an infinite loop if there fewer unique elements than tests run.
-    """
+    """Yield unique elements, preserving order."""
     seen = set()
     for element in elements:
         k = key(element)
@@ -111,15 +110,25 @@ def unique(elements, key=(lambda x:x)):
             yield element
 
 
-def forall(test_fn=None, tests=100):
+def _annotations(f):
+    return f.__annotations__ if hasattr(f, "__annotations__") else {}
+
+
+
+def forall(_test_fn=None, samples=100, **parameter_generators):    
     def bind_parameters(test_fn):
-        arg_bindings = dicts(test_fn.__annotations__)
-        def bound_test_fn():
-            for args in itertools.islice(arg_bindings, tests):
-                test_fn(**args)
+        parameter_generators.update(_annotations(test_fn))
+        
+        @wraps(test_fn)
+        def bound_test_fn(*args):
+            param_names, param_value_iters = zip(*parameter_generators.items())
+            param_value_samples = product(*[islice(cycle(i), samples) for i in param_value_iters])
+            
+            for param_values in param_value_samples:
+                test_fn(*args, **dict(zip(param_names, param_values)))
+        
         return bound_test_fn
     
-    # Allow @forall or @forall(tests=100)
-    return bind_parameters if test_fn is None else bind_parameters(test_fn)
-
+    # Allow @forall, @forall(samples=100) or @forall(param1=generator1, param2=generator2, ...)
+    return bind_parameters if _test_fn is None else bind_parameters(_test_fn)
 

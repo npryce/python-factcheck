@@ -9,6 +9,26 @@ def test_always_always_returns_same_value(x:always("foo")):
     assert x == "foo"
 
 
+@forall(x=always("foo"))
+def test_can_specify_inputs_in_decorator(x):
+    assert x == "foo"
+
+
+@forall
+def test_can_specify_fixed_sequence_ofinputs(x:[1,2], y:[20,30]):
+    assert x in (1,2) and y in (20,30)
+
+
+@forall
+def test_can_specify_fixed_sequence_of_inputs_which_is_then_repeated(x:[1,2], samples=300):
+    assert x == 1 or x == 2
+
+class TestCanApplyForallDecoratorToTestMethods:
+    @forall
+    def test_example_method(self, x:ints()):
+        # Doesn't crash qc when run as a test
+        pass
+
 @forall
 def test_choice_selects_random_elements_from_a_sequence(v:choices([3, 6, 2, 1, 11])):
     assert v in [3, 6, 2, 1, 11]
