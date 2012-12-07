@@ -1,4 +1,4 @@
-"""A simple but extensible implementation of QuickCheck for Python 3.
+"""A simple but extensible implementation of QuickCheck 1 for Python 3.
 
 Copyright (c) 2012 Nat Pryce.
 """

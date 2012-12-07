@@ -13,11 +13,9 @@ def test_always_always_returns_same_value(x:always("foo")):
 def test_can_specify_inputs_in_decorator(x):
     assert x == "foo"
 
-
 @forall
 def test_can_specify_fixed_sequence_ofinputs(x:[1,2], y:[20,30]):
     assert x in (1,2) and y in (20,30)
-
 
 @forall
 def test_can_specify_fixed_sequence_of_inputs_which_is_then_repeated(x:[1,2], samples=300):
