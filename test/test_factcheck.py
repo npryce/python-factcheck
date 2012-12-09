@@ -1,6 +1,6 @@
 
 import itertools
-from qc import *
+from factcheck import *
 
 # Pretty rudimentary tests.  In particular, they test nothing about distributions.
 

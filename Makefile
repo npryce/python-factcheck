@@ -4,8 +4,11 @@ ifndef python
 python=3.2
 endif
 
-ARCHITECTURE:=$(shell uname -m)
+PROJECT=$(shell python setup.py --name)
+VERSION=$(shell python setup.py --version)
+SRCDIR=src
 
+ARCHITECTURE:=$(shell uname -m)
 PYTHON_ENV=$(PWD)/python$(python)-$(ARCHITECTURE)
 PYTHON_EXE=$(PYTHON_ENV)/bin/python
 PIP=$(PYTHON_ENV)/bin/pip
@@ -14,7 +17,7 @@ PYTHON_LIBDIR=$(PYTHON_ENV)/lib/python$(python)/site-packages
 
 
 .PHONY: all
-all: check dist
+all: dist
 
 .PHONY: env
 env: env-base env-libs
@@ -38,7 +41,29 @@ env-again: env-clean env
 
 .PHONY: check
 check:
-	PYTHONPATH=src:$(PYTHON_LIBDIR) $(PYTHON_ENV)/bin/py.test test/
+	PYTHONPATH=$(SRCDIR):$(PYTHON_LIBDIR) $(PYTHON_ENV)/bin/py.test test/
+
+check-install: dist
+	$(MAKE) PYTHON_ENV=build/test-$(python)-$(ARCHITECTURE) env-again
+	build/test-$(python)-$(ARCHITECTURE)/bin/python$(python) setup.py install
+	$(MAKE) PYTHON_ENV=build/test-$(python)-$(ARCHITECTURE) SRCDIR=test check
+.PHONY: check-install
+
+build/test-$(python)-$(ARCHITECTURE):
+	mkdir -p $(dir $@)
+	cp -R $(PYTHON_ENV) $@
+
+dist/$(PROJECT)-$(VERSION).tar.gz: setup.py Makefile README.txt check
+	$(PYTHON_EXE) setup.py sdist
+
+README.txt: README.md
+	pandoc --from=markdown --to=rst $^ > $@
+
+dist: dist/$(PROJECT)-$(VERSION).tar.gz
+.PHONY: dist
+
+published:
+	$(PYTHON_ENV)/bin/python setup.py sdist upload
 
 .PHONY: clean
 clean:

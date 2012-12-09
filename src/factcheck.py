@@ -6,8 +6,6 @@ Copyright (c) 2012 Nat Pryce.
 import sys
 import random
 from itertools import product, cycle, repeat, islice
-from functools import wraps
-
 
 def _random_values(_generator_fn, *args, **kwargs):
     while True:
@@ -119,7 +117,7 @@ def forall(_test_fn=None, samples=100, **parameter_generators):
     def bind_parameters(test_fn):
         parameter_generators.update(_annotations(test_fn))
         
-        @wraps(test_fn)
+        # Note: should be decorated by @functools.wraps(test_fn) but that confuses pytest
         def bound_test_fn(*args):
             param_names, param_value_iters = zip(*parameter_generators.items())
             param_value_samples = product(*[islice(cycle(i), samples) for i in param_value_iters])
