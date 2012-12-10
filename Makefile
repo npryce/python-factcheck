@@ -6,14 +6,12 @@ endif
 
 PROJECT=$(shell python setup.py --name)
 VERSION=$(shell python setup.py --version)
-SRCDIR=src
+SRCDIR=.
 
 ARCHITECTURE:=$(shell uname -m)
 PYTHON_ENV=$(PWD)/python$(python)-$(ARCHITECTURE)
 PYTHON_EXE=$(PYTHON_ENV)/bin/python
 PIP=$(PYTHON_ENV)/bin/pip
-PYTHON_BUILDDIR=$(PYTHON_ENV)/build
-PYTHON_LIBDIR=$(PYTHON_ENV)/lib/python$(python)/site-packages
 
 TESTS=test/test_factcheck.py $(wildcard test/test_factcheck_python$(python)*.py)
 
@@ -42,7 +40,7 @@ env-again: env-clean env
 
 .PHONY: check
 check:
-	PYTHONPATH=$(SRCDIR):$(PYTHON_LIBDIR) $(PYTHON_ENV)/bin/py.test $(TESTS)
+	$(PYTHON_EXE) setup.py test
 
 check-install: dist
 	$(MAKE) PYTHON_ENV=build/test-$(python)-$(ARCHITECTURE) env-again
@@ -54,7 +52,7 @@ build/test-$(python)-$(ARCHITECTURE):
 	mkdir -p $(dir $@)
 	cp -R $(PYTHON_ENV) $@
 
-dist/$(PROJECT)-$(VERSION).tar.gz: setup.py Makefile README.txt check
+dist/$(PROJECT)-$(VERSION).tar.gz: setup.py Makefile check README.txt
 	$(PYTHON_EXE) setup.py sdist
 
 README.txt: README.md
@@ -68,8 +66,8 @@ published:
 
 .PHONY: clean
 clean:
-	rm -rf output/ dist/ build/ MANIFEST README.rst
-	find . -name '*.pyc' -o -name '*~' | xargs -r rm
+	rm -rf output/ dist/ build/ MANIFEST README.txt __pycache__/
+	find . -name '*.pyc' -o -name '*~' | xargs -r rm -f	
 
 .PHONY: again
 again: clean all

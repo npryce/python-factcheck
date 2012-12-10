@@ -1,7 +1,23 @@
 #!/usr/bin/env python
 
+from setuptools import setup
+from setuptools.command.test import test as TestCommand
+import sys
 import os
-from distutils.core import setup
+
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_suite = True
+        self.test_args = ['test/test_factcheck.py']
+        if sys.version_info[0] > 2:
+            self.test_args.append('test/test_factcheck_python3.py')
+        
+    def run_tests(self):
+        #import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(self.test_args)
+        sys.exit(errno)
 
 
 setup(name='factcheck',
@@ -22,8 +38,10 @@ setup(name='factcheck',
         'Natural Language :: English',
         'Topic :: Software Development :: Testing',
       ],
-
+      
       provides=['factcheck'],
       py_modules=['factcheck'],
-      package_dir={'':'src'}
+      
+      tests_require=['pytest'],
+      cmdclass = {'test': PyTest}
 )
