@@ -7,6 +7,13 @@ import sys
 import random
 from itertools import product, cycle, repeat, islice
 
+if sys.version_info[0] > 2:
+    imap = map
+    izip = zip
+else:
+    from itertools import imap, izip
+
+
 def _random_values(_generator_fn, *args, **kwargs):
     while True:
         yield _generator_fn(*args, **kwargs)
@@ -73,12 +80,12 @@ def sequences(lengths=None, elements=None):
 
 def lists(lengths=None, elements=None):
     """random length lists of random elements"""
-    return map(list, sequences(lengths, elements))
+    return imap(list, sequences(lengths, elements))
 
 
 def tuples(*elementses):
     """fixed-size tuples of random elements."""
-    return zip(*elementses)
+    return izip(*elementses)
 
 
 def dicts(d):
@@ -90,12 +97,12 @@ def dicts(d):
     Returns: a generator of dictionaries, mapping each key, k, of d to
        the next element of d[k].
     """
-    keys, value_iters = zip(*d.items())
-    return (dict(zip(keys,values)) for values in zip(*value_iters))
+    keys, value_iters = izip(*d.items())
+    return (dict(izip(keys,values)) for values in izip(*value_iters))
 
 
 def mapping(f, *args_gens, **kwargs_gens):
-    return (f(*args,**kwargs) for (args, kwargs) in zip(tuples(*args_gens), dicts(kwargs_gens)))
+    return (f(*args,**kwargs) for (args, kwargs) in izip(tuples(*args_gens), dicts(kwargs_gens)))
 
 
 def unique(elements, key=(lambda x:x)):

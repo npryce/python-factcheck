@@ -1,5 +1,5 @@
 
-# Which version of python are we using?
+# Which major version of python are we using?  Set to 2 to test in Python 2
 ifndef python
 python=3
 endif
