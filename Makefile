@@ -1,7 +1,7 @@
 
 # Which version of python are we using?
 ifndef python
-python=3.2
+python=3
 endif
 
 PROJECT=$(shell python setup.py --name)
@@ -15,6 +15,7 @@ PIP=$(PYTHON_ENV)/bin/pip
 PYTHON_BUILDDIR=$(PYTHON_ENV)/build
 PYTHON_LIBDIR=$(PYTHON_ENV)/lib/python$(python)/site-packages
 
+TESTS=$(wildcard test/test_*.py) $(wildcard test/py$(python)k_test_*.py)
 
 .PHONY: all
 all: dist
@@ -41,7 +42,7 @@ env-again: env-clean env
 
 .PHONY: check
 check:
-	PYTHONPATH=$(SRCDIR):$(PYTHON_LIBDIR) $(PYTHON_ENV)/bin/py.test test/
+	PYTHONPATH=$(SRCDIR):$(PYTHON_LIBDIR) $(PYTHON_ENV)/bin/py.test $(TESTS)
 
 check-install: dist
 	$(MAKE) PYTHON_ENV=build/test-$(python)-$(ARCHITECTURE) env-again
