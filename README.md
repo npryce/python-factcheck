@@ -1,7 +1,7 @@
 factcheck
 =========
 
-A simple but extensible implementation of QuickCheck for Python 3 that works well with Pytest.
+A simple but extensible implementation of QuickCheck for Python 2.7 and Python 3 that works well with Pytest.
 
 
 Installation
