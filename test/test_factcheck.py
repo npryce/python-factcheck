@@ -10,7 +10,7 @@ def test_always_always_returns_same_value(x):
     assert x == "foo"
 
 @forall(x=[1,2], y=[20,30])
-def test_can_specify_fixed_sequence_ofinputs(x, y):
+def test_can_specify_fixed_sequence_of_inputs(x, y):
     assert x in (1,2) and y in (20,30)
 
 @forall(x=[1,2], samples=300)
