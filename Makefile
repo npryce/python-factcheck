@@ -15,7 +15,7 @@ PIP=$(PYTHON_ENV)/bin/pip
 PYTHON_BUILDDIR=$(PYTHON_ENV)/build
 PYTHON_LIBDIR=$(PYTHON_ENV)/lib/python$(python)/site-packages
 
-TESTS=$(wildcard test/test_*.py) $(wildcard test/py$(python)k_test_*.py)
+TESTS=test/test_factcheck.py $(wildcard test/test_factcheck_python$(python)*.py)
 
 .PHONY: all
 all: dist

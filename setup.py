@@ -5,7 +5,7 @@ from distutils.core import setup
 
 
 setup(name='factcheck',
-      version='1.0.0.0',
+      version='1.0.0.1',
       description='A simple, extensible implementation of QuickCheck for Python',
       author='Nat Pryce',
       author_email='about-factcheck@natpryce.com',
