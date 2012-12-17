@@ -21,7 +21,7 @@ class PyTest(TestCommand):
 
 
 setup(name='factcheck',
-      version='1.0.0.2',
+      version='1.1.0.0',
       description='A simple, extensible implementation of QuickCheck for Python',
       author='Nat Pryce',
       author_email='about-factcheck@natpryce.com',
@@ -30,11 +30,14 @@ setup(name='factcheck',
       license="Apache 2.0",
       
       classifiers = [
-        'Development Status :: 4 - Beta',
-        'Environment :: Console',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.2',
         'Natural Language :: English',
         'Topic :: Software Development :: Testing',
       ],
