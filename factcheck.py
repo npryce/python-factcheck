@@ -29,7 +29,7 @@ def choices(seq):
     return _random_values(random.choice, seq)
 
 
-def bits(lengths):
+def bitseqs(lengths):
     """long ints with 'n' random bits"""
     return (random.getrandbits(length) for length in lengths)
 
@@ -118,9 +118,10 @@ def unique(elements, key=(lambda x:x)):
 def _annotations(f):
     return f.__annotations__ if hasattr(f, "__annotations__") else {}
 
+def _always(*args, **kwargs):
+    return True
 
-
-def forall(_test_fn=None, samples=100, **parameter_generators):    
+def forall(_test_fn=None, samples=100, where=_always, **parameter_generators):
     def bind_parameters(test_fn):
         parameter_generators.update(_annotations(test_fn))
         
@@ -130,7 +131,9 @@ def forall(_test_fn=None, samples=100, **parameter_generators):
             param_value_samples = product(*[islice(cycle(i), samples) for i in param_value_iters])
             
             for param_values in param_value_samples:
-                test_fn(*args, **dict(zip(param_names, param_values)))
+                param_bindings = dict(zip(param_names, param_values))
+                if where(**param_bindings):
+                    test_fn(*args, **param_bindings)
         
         return bound_test_fn
     

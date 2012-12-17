@@ -59,8 +59,8 @@ def test_dicts_generates_dicts_with_fixed_keys_and_random_values(d):
     assert 3 <= d['a'] <= 7
     assert 0 <= d['b'] <= 6
 
-@forall(i=bits(lengths=ints(min=3,max=4)))
-def test_bits_generates_integers_with_random_bits_of_random_size(i):
+@forall(i=bitseqs(lengths=ints(min=3,max=4)))
+def test_bitseqs_generates_integers_with_random_bits_of_random_size(i):
     assert 0 <= i < 16
 
 @forall(f=floats(1.0, 3.0))
@@ -85,3 +85,7 @@ def test_unique_returns_unique_elements_in_order():
 def test_unique_identifier_can_be_defined_by_key_function():
     assert list(unique([-1,-2,-3,1,2,3,4], key=abs)) == [-1, -2, -3, 4]
 
+
+@forall(x=range(4), y=range(4), where=lambda x, y: x != y)
+def test_can_filter_inputs(x, y):
+    assert x != y
