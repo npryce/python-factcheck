@@ -12,6 +12,7 @@ class PyTest(TestCommand):
         self.test_args = ['test/test_factcheck.py']
         if sys.version_info[0] > 2:
             self.test_args.append('test/test_factcheck_python3.py')
+        self.test_args.append('--duration=10')
         
     def run_tests(self):
         #import here, cause outside the eggs aren't loaded
