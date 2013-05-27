@@ -20,6 +20,10 @@ def _random_values(_generator_fn, *args, **kwargs):
     while True:
         yield _generator_fn(*args, **kwargs)
 
+def _defaulted(value, default_value):
+    return default_value if value is None else value
+
+
 
 def always(v):
     """always returns 'v'"""
@@ -45,8 +49,8 @@ default_max_int = +1000
 def ints(min=None, max=None):
     """random integers between min and max, inclusive"""
     return _random_values(random.randint, 
-                          min if min is not None else default_min_int, 
-                          max if max is not None else default_max_int)
+                          _defaulted(min, default_min_int), 
+                          _defaulted(max, default_max_int))
 
 
 def from_range(start, stop=None, step=1):
@@ -63,8 +67,8 @@ default_max_float = 1000
 def floats(lower=None, upper=None):
     """random floating-point numbers selected uniformly from [a,b) or [a,b] depending on rounding."""
     return _random_values(random.uniform,
-                          lower if lower is not None else default_min_float,
-                          upper if upper is not None else default_max_float)
+                          _defaulted(lower, default_min_float),
+                          _defaulted(upper, default_max_float))
 
 default_sequence_lengths = ints(min=0, max=32)
 """Default lengths for sequences and lists"""
@@ -74,8 +78,8 @@ default_sequence_elements = ints()
 
 def sequences(lengths=None, elements=None):
     """random length sequences of random elements"""
-    elements = elements if elements is not None else default_sequence_elements
-    lengths = lengths if lengths is not None else default_sequence_lengths
+    elements = _defaulted(elements, default_sequence_elements)
+    lengths = _defaulted(lengths, default_sequence_lengths)
     
     return (islice(elements, length) for length in lengths)
 
