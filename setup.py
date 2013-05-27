@@ -22,7 +22,7 @@ class PyTest(TestCommand):
 
 
 setup(name='factcheck',
-      version='1.1.0.0',
+      version='1.2.0.0',
       description='A simple, extensible implementation of QuickCheck for Python',
       author='Nat Pryce',
       author_email='about-factcheck@natpryce.com',
