@@ -59,6 +59,10 @@ def test_dicts_generates_dicts_with_fixed_keys_and_random_values(d):
     assert 3 <= d['a'] <= 7
     assert 0 <= d['b'] <= 6
 
+@forall(d=dicts({}))
+def test_dicts_can_generate_empty_dictionaries(d):
+    assert len(d) == 0
+
 @forall(i=bitseqs(lengths=ints(min=3,max=4)))
 def test_bitseqs_generates_integers_with_random_bits_of_random_size(i):
     assert 0 <= i < 16
@@ -76,6 +80,10 @@ def _f(a, b, c, d):
 
 @forall(n=mapping(_f, always(1), b=always(2), d=always(3), c=always(4)))
 def test_mapping_generates_result_of_mapping_callable_over_argument_generators(n):
+    assert n == 2
+
+@forall(n=mapping(_f, always(1), always(2), always(4), always(3)))
+def test_mapping_works_if_no_keyword_arguments(n):
     assert n == 2
 
 def test_unique_returns_unique_elements_in_order():

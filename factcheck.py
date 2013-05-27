@@ -108,8 +108,11 @@ def dicts(d):
     Returns: a generator of dictionaries, mapping each key, k, of d to
        the next element of d[k].
     """
-    keys, value_iters = izip(*d.items())
-    return (dict(izip(keys,values)) for values in izip(*value_iters))
+    if d:
+        keys, value_iters = izip(*d.items())
+        return (dict(izip(keys,values)) for values in izip(*value_iters))
+    else:
+        return always({})
 
 
 def mapping(f, *args_gens, **kwargs_gens):
