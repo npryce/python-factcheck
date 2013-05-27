@@ -69,7 +69,7 @@ def test_floats_generates_floating_point_numbers_within_range(f):
 
 @forall(f=floats())
 def test_floats_generates_floating_point_numbers_within_default_range(f):
-    assert default_min_float <= f < default_max_float
+    assert default_min_float <= f <= default_max_float
 
 def _f(a, b, c, d):
     return (a+b-c)+d
@@ -88,4 +88,8 @@ def test_unique_identifier_can_be_defined_by_key_function():
 
 @forall(x=range(4), y=range(4), where=lambda x, y: x != y)
 def test_can_filter_inputs(x, y):
+    assert x != y
+
+@forall(x=range(4), y=range(4), z=range(4), where=lambda x, y: x != y)
+def test_do_not_need_to_refer_to_all_parameters_in_filter(x, y, z):
     assert x != y

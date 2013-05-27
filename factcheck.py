@@ -6,6 +6,8 @@ Copyright (c) 2012 Nat Pryce.
 import sys
 import random
 from itertools import product, cycle, repeat, islice
+import inspect
+
 
 if sys.version_info[0] > 2:
     imap = map
@@ -52,17 +54,17 @@ def from_range(start, stop=None, step=1):
     return _random_values(random.randrange, start, stop, step)
 
 
-default_min_float = sys.float_info.min
+default_min_float = -1000
 """Default min value for floats"""
 
-default_max_float = sys.float_info.max
+default_max_float = 1000
 """Default max value for floats"""
 
-def floats(a=None, b=None):
+def floats(lower=None, upper=None):
     """random floating-point numbers selected uniformly from [a,b) or [a,b] depending on rounding."""
     return _random_values(random.uniform,
-                          a if a is not None else default_min_float,
-                          b if b is not None else default_max_float)
+                          lower if lower is not None else default_min_float,
+                          upper if upper is not None else default_max_float)
 
 default_sequence_lengths = ints(min=0, max=32)
 """Default lengths for sequences and lists"""
@@ -121,18 +123,33 @@ def _annotations(f):
 def _always(*args, **kwargs):
     return True
 
-def forall(_test_fn=None, samples=100, where=_always, **parameter_generators):
+def _params(param_bindings, f):
+    argspec = inspect.getargspec(f)
+    if argspec.keywords is not None:
+        return param_bindings
+    else:
+        return dict((k,param_bindings[k]) for k in argspec.args)
+
+
+def forall(_test_fn=None, samples=1000, where=_always, **parameter_generators):    
+    where_argspec = inspect.getargspec(where)
+    if where_argspec.keywords is None:
+        where_bindings = lambda d: {k:d[k] for k in where_argspec.args}
+    else:
+        where_bindings = lambda d: d
+    
     def bind_parameters(test_fn):
         parameter_generators.update(_annotations(test_fn))
         
         # Note: should be decorated by @functools.wraps(test_fn) but that confuses pytest
         def bound_test_fn(*args):
             param_names, param_value_iters = zip(*parameter_generators.items())
-            param_value_samples = product(*[islice(cycle(i), samples) for i in param_value_iters])
+            param_value_samples = islice(zip(*[cycle(i) for i in param_value_iters]), 0, samples)
             
             for param_values in param_value_samples:
                 param_bindings = dict(zip(param_names, param_values))
-                if where(**param_bindings):
+                
+                if where(**where_bindings(param_bindings)):
                     test_fn(*args, **param_bindings)
         
         return bound_test_fn
