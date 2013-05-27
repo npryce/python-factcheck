@@ -5,7 +5,7 @@ Copyright (c) 2012 Nat Pryce.
 
 import sys
 import random
-from itertools import product, cycle, repeat, islice
+from itertools import product, cycle, repeat, islice, chain
 import inspect
 
 
@@ -16,13 +16,15 @@ else:
     from itertools import imap, izip
 
 
-def _random_values(_generator_fn, *args, **kwargs):
+def _random_values(_generator_fn, *args, **kwargs):    
     while True:
         yield _generator_fn(*args, **kwargs)
 
 def _defaulted(value, default_value):
     return default_value if value is None else value
 
+def _actual(xs):
+    return [x for x in xs if x is not None]
 
 
 def always(v):
@@ -48,14 +50,16 @@ default_max_int = +1000
 
 def ints(min=None, max=None):
     """random integers between min and max, inclusive"""
-    return _random_values(random.randint, 
-                          _defaulted(min, default_min_int), 
-                          _defaulted(max, default_max_int))
+    return chain(_actual([min,max]),
+                 _random_values(random.randint, 
+                                _defaulted(min, default_min_int), 
+                                _defaulted(max, default_max_int)))
 
 
 def from_range(start, stop=None, step=1):
     """random integers taken from range(start, stop[, step])"""
-    return _random_values(random.randrange, start, stop, step)
+    return chain(_actual(set([start,stop-step])),
+                 _random_values(random.randrange, start, stop, step))
 
 
 default_min_float = -1000
@@ -66,9 +70,10 @@ default_max_float = 1000
 
 def floats(lower=None, upper=None):
     """random floating-point numbers selected uniformly from [a,b) or [a,b] depending on rounding."""
-    return _random_values(random.uniform,
-                          _defaulted(lower, default_min_float),
-                          _defaulted(upper, default_max_float))
+    return chain(_actual([lower]),
+                 _random_values(random.uniform,
+                                _defaulted(lower, default_min_float),
+                                _defaulted(upper, default_max_float)))
 
 default_sequence_lengths = ints(min=0, max=32)
 """Default lengths for sequences and lists"""
