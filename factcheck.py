@@ -21,7 +21,7 @@ def _random_values(_generator_fn, *args, **kwargs):
         yield _generator_fn(*args, **kwargs)
 
 def _defaulted(value, default_value):
-    return default_value if value is None else value
+    return value if value is not None else default_value
 
 def _actual(xs):
     return [x for x in xs if x is not None]
@@ -156,9 +156,13 @@ def forall(_test_fn=None, samples=1000, where=_always, **parameter_generators):
         # Note: should be decorated by @functools.wraps(test_fn) but that confuses pytest
         def bound_test_fn(*args):
             param_names, param_value_iters = zip(*parameter_generators.items())
-            param_value_samples = islice(zip(*[cycle(i) for i in param_value_iters]), 0, samples)
             
-            for param_values in param_value_samples:
+            # Shuffle the values so that fixed boundary values are not always applied together
+            param_value_populations = [list(islice(cycle(i),0,samples)) for i in param_value_iters]
+            for l in param_value_populations:
+                random.shuffle(l)
+            
+            for param_values in zip(*param_value_populations):
                 param_bindings = dict(zip(param_names, param_values))
                 
                 if where(**where_bindings(param_bindings)):
